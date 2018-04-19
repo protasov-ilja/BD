@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS `booking_room` (
 
 
 -- 2 Выдать информацию о клиентах гостиницы “Алтай”, проживающих в номерах категории “люкс”.
--- выбираем комнаты где отель = Алтай; все комнаты где kind = люкс; из этой выборки выбираем все комнаты у которых arrival <= NOW and departure >= NOW
 EXPLAIN SELECT client.id_client, client.full_name, client.phone_number, room_kind.category_name, hotel.hotel_name, hotel.id_hotel
 FROM `booking`
   LEFT JOIN `client` ON client.id_client = booking.id_client
@@ -75,9 +74,6 @@ FROM `booking`
 WHERE room_kind.category_name = 'люкс' AND hotel.hotel_name = 'Алтай';
 
 -- 3	Дать список свободных номеров всех гостиниц на 30.05.12.
--- номер свободен если его order_date < 30.05.12; если departure < 30.05.12 или order_date > 30.05.12; если departure > 30.05.12
--- ЕСЛИ НЕ БРОНИРОВАЛИ НОМЕР
-
 EXPLAIN SELECT room.room_number_in_hotel AS room_number, room.id_room, hotel.hotel_name, booking_room.order_date, booking_room.departure_date
 FROM `room`
   LEFT JOIN `booking_room` ON room.id_room = booking_room.id_room
@@ -87,7 +83,6 @@ WHERE (booking_room.order_date < '2012-05-30' AND booking_room.departure_date < 
       OR booking_room.order_date IS NULL;
 
 -- 4	Дать количество проживающих в гостинице “Восток” на 25.05.12 по каждой категории номера
--- group by
 EXPLAIN SELECT COUNT(room.id_room_kind) AS clients, room.id_room_kind
 FROM `booking_room`
   LEFT JOIN `room` ON room.id_room = booking_room.id_room
@@ -104,7 +99,6 @@ CREATE TEMPORARY TABLE IF NOT EXISTS tmp_table AS (
   GROUP BY booking_room.id_room
 );
 
--- добавить имя клиента
 SELECT client.id_client, client.full_name, tmp_table.d_date AS departure, tmp_table.id_room
 FROM `tmp_table`
   LEFT JOIN `booking_room` ON tmp_table.id_room = booking_room.id_room AND tmp_table.d_date = booking_room.departure_date
