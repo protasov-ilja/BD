@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `manufacturer` (
   `name` VARCHAR(255) NOT NULL,
   `agent_name` VARCHAR(255) NOT NULL,
   `phone` VARCHAR(255) NOT NULL,
-  `banking_account` INT(11) UNSIGNED NOT NULL,
+  `banking_account` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id_manufacturer`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `vendor` (
   `name` VARCHAR(255) NOT NULL,
   `agent_name` VARCHAR(255) NOT NULL,
   `phone` VARCHAR(255) NOT NULL,
-  `banking_account` INT(11) UNSIGNED NOT NULL,
+  `banking_account` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id_vendor`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `full_name` VARCHAR(255) NOT NULL,
   `mail` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
-  `wallet_number` INT(11) UNSIGNED DEFAULT NULL,
+  `wallet_number` VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (`id_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -98,12 +98,23 @@ DROP TABLE IF EXISTS `order`;
 CREATE TABLE IF NOT EXISTS `order` (
   `id_order` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` INT(11) UNSIGNED NOT NULL,
-  `id_goods` INT(11) UNSIGNED NOT NULL,
   `amount` INT(11) UNSIGNED DEFAULT 1,
   `total_cost` FLOAT UNSIGNED NOT NULL,
   PRIMARY KEY (`id_order`),
   KEY `id_user` (`id_user`),
+  FOREIGN KEY (`id_user`) REFERENCES `user`(`id_user`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- order(заказ)
+DROP TABLE IF EXISTS `goods_in_order`;
+CREATE TABLE IF NOT EXISTS `goods_in_order` (
+  `id_goods_in_order` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_order` INT(11) UNSIGNED NOT NULL,
+  `id_goods` INT(11) UNSIGNED NOT NULL,
+  `amount` INT(11) UNSIGNED DEFAULT 1,
+  PRIMARY KEY (`id_goods_in_order`),
+  KEY `id_order` (`id_order`),
   KEY `id_goods` (`id_goods`),
-  FOREIGN KEY (`id_user`) REFERENCES `user`(`id_user`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  FOREIGN KEY (`id_order`) REFERENCES `order`(`id_order`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   FOREIGN KEY (`id_goods`) REFERENCES `goods`(`id_goods`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
